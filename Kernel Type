@@ -1,0 +1,62 @@
+#load it into the memory
+seeds <- read.csv(" http:// archive.ics.uci.edu/ ml/ machine -learning-databases/ 00236/ seeds_dataset.txt", header = FALSE, sep ="", as.is = TRUE)
+
+#To find more information
+summary(seeds)
+
+#Preprocessing- to find out the data structure 
+str(seeds)
+
+#Rename the columns
+colnames( seeds) <- c(" area"," perimeter"," compactness"," length", "width"," asymmetry"," length2"," seedType")
+
+#Change the attribute that has categorial values to a factor
+seeds $ seedType <- factor( seeds $ seedType)
+
+#To view the structure after ther preprocessing
+str(seeds)
+
+#creating the model
+trainSize <- round( nrow( seeds) * 0.7)
+testSize <- nrow( seeds) - trainSize
+
+#Output
+trainSize
+testSize
+
+#Create a training set and test represented of the data (Therefore, random sampling)
+set.seed( 123) 
+training_indices <- sample( seq_len( nrow( seeds)), size = trainSize) 
+trainSet <- seeds[ training_indices,] 
+testSet <- seeds[-training_indices,] 
+
+#Installation of Party Package
+install.packages("party")
+
+#Calling on party packaged
+library(party)
+
+#Train the model
+model<-ctree(seedType~.,data=trainSet)
+
+#Summary Statistics- Class Column tells you that you've created a decision tree. 
+summary(model)
+
+#How the splits are being determined 
+model
+
+#Visualize the model 
+plot(model)
+
+#How well the model performed with the test set
+table(predict(model),trainSet$seedType)
+
+#Test the data
+testPrediction <- predict( model, newdata = testSet)
+
+#evaluate how well the model performed with the test set
+#Making new predictions
+newPrediction <- predict( model, list( area = 11, perimeter = 13, compactness = 0.855, length = 5, width = 2.8, asymmetry = 6.5, length2 = 5), interval =" predict", level =. 95)
+
+#Output
+newPrediction
